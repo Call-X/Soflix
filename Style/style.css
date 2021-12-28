@@ -8,6 +8,11 @@ body{
     background-color: black;
 }
 
+#wrapper {
+    width: 100%;
+    max-width: 964px;
+    position: relative;
+  }
   
   #carousel {
     overflow: auto;
