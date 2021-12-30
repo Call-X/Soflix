@@ -1,3 +1,4 @@
+
 const gap = 16;
 
 const carousel = document.getElementById("carousel"),
@@ -28,6 +29,65 @@ prev.addEventListener("click", e => {
 
 let width = carousel.offsetWidth;
 window.addEventListener("resize", e => (width = carousel.offsetWidth));
+
+const carousel_trending = document.getElementById("carousel_trending"),
+  content_trending = document.getElementById("content_trending"),
+  next_trending = document.getElementById("next_trending"),
+  prev_trending = document.getElementById("prev_trending");
+
+
+next_trending.addEventListener("click", e => {
+  carousel_trending.scrollBy(width + gap, 0);
+  if (carousel_trending.scrollWidth !== 0) {
+    prev_trending.style.display = "flex";
+  }
+
+  if (content_trending.scrollWidth - width - gap <= carousel_trending.scrollLeft + width) {
+    next_trending.style.display = "none";
+  }
+});
+prev_trending.addEventListener("click", e => {
+  carousel_trending.scrollBy(-(width + gap), 0);
+  if (carousel_trending.scrollLeft - width - gap <= 0) {
+    prev_trending.style.display = "none";
+  }
+  if (!content_trending.scrollWidth - width - gap <= carousel_trending.scrollLeft + width) {
+    next_trending.style.display = "flex";
+  }
+});
+
+let width_trending = carousel_trending.offsetWidth_trending;
+window.addEventListener("resize", e => (width_trending = carousel_trending.offsetWidth_trending));
+
+
+const carousel_top_rated = document.getElementById("carousel_top_rated"),
+  content_top_rated = document.getElementById("content_top_rated"),
+  next_top_rated = document.getElementById("next_top_rated"),
+  prev_top_rated = document.getElementById("prev_top_rated");
+
+
+next_top_rated.addEventListener("click", e => {
+  carousel_top_rated.scrollBy(width + gap, 0);
+  if (carousel_top_rated.scrollWidth !== 0) {
+    prev_top_rated.style.display = "flex";
+  }
+
+  if (content_top_rated.scrollWidth - width - gap <= carousel_top_rated.scrollLeft + width) {
+    next_top_rated.style.display = "none";
+  }
+});
+prev_top_rated.addEventListener("click", e => {
+  carousel_top_rated.scrollBy(-(width + gap), 0);
+  if (carousel_top_rated.scrollLeft - width - gap <= 0) {
+    prev_top_rated.style.display = "none";
+  }
+  if (!content_top_rated.scrollWidth - width - gap <= carousel_top_rated.scrollLeft + width) {
+    next_top_rated.style.display = "flex";
+  }
+});
+
+let width_top_rated = carousel_top_rated.offsetWidth_top_rated;
+window.addEventListener("resize", e => (width_top_rated = carousel_top_rated.offsetWidth_top_rated));
 
 
 const searchInput = document.getElementById('search');
