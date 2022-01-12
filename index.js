@@ -5,6 +5,14 @@ let nbr_of_row = 0;
 
 const categories = [
   {
+    id: "best_movie",
+    title: "Meilleur film",
+    query: "sort_by=-imdb_score",
+    start: 0,
+    end: 1,
+  },
+
+  {
     id: "best_rated",
     title: "Les mieux notés",
     query: "sort_by=-imdb_score",
@@ -12,14 +20,6 @@ const categories = [
     end: 8,
   },
 
-  {
-    id: "best_movie",
-    title: "Meilleur film",
-    query: "sort_by=-imdb_score",
-    start: 0,
-    end: 1,
-  },
-  
   {
     id: "fantasy",
     title: "Films fantastiques",
@@ -72,7 +72,7 @@ const getMoviesInfos = async (movieID) => {
 
 const generateHTMLCategory = async (category) => {
   movies = await getMovies(category.query, category.start, category.end);
-  
+
   // Create element for a categories
   // First, add the <div.row>
   const row = document.createElement("div");
@@ -87,13 +87,8 @@ const generateHTMLCategory = async (category) => {
   // Create <div.row__posters>
   const posters = document.createElement("div");
   posters.classList.add("row__posters");
-  posters.id = "posters_" + category.id; 
+  posters.id = "posters_" + category.id;
   row.append(posters);
-
-  // Add the loader
-  //const loader =
-   // '<div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>';
-  //posters.innerHTML = loader;
 
   // Create prev button
   const prev = document.createElement("button");
@@ -112,9 +107,7 @@ const generateHTMLCategory = async (category) => {
     '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" > <path fill="none" d="M0 0h24v24H0V0z" /> <path d="M10.02 6L8.61 7.41 13.19 12l-4.58 4.59L10.02 18l6-6-6-6z" /> </svg>';
   next.innerHTML = svgNextHTMLcontent;
   row.append(next);
-
-  categories_div.append(row);
-
+  categories_div.appendChild(row);
   posters.innerHTML = "";
 
   movies.forEach((movie) => {
@@ -132,8 +125,8 @@ const generateHTMLCategory = async (category) => {
 
   const banner = document.querySelector(".banner");
   const new_gap = 338 * nbr_of_row;
-  next.style.top = banner.offsetHeight + new_gap + 338 / 2 + "px";
-  prev.style.top = banner.offsetHeight + new_gap + 338 / 2 + "px";
+  next.style.top = banner.offsetHeight + 85 + new_gap + 338 / 2 + "px";
+  prev.style.top = banner.offsetHeight + 85 + new_gap + 338 / 2 + "px";
 
   //Incrément le nombre de ligne de 1 vu qu'on va rajouter une catégorie entière
   nbr_of_row++;
@@ -161,8 +154,10 @@ const generateHTMLCategory = async (category) => {
   });
 };
 
-const displayMovieInformations = (id) => {
-  console.log("ça marche : " + id);
+const displayMovieInformations = async (id) => {
+  movie = await getMoviesInfos(id);
+  content = generateContenteModalBody(movie);
+  generateModal(content, movie.title);
 };
 
 const generateBanner = async (category) => {
@@ -178,14 +173,139 @@ const generateBanner = async (category) => {
   banner.style.backgroundPosition = "center";
   bannerTitle.innerText = movie.title;
   bannerDescription.innerText = movie.long_description;
+  banner.addEventListener("click", (e) => {
+    displayMovieInformations(movie.id);
+  });
+
 };
 
-categories.forEach((category) => {
-  console.log(category.title)
-  if (category.id !== "best_movie") {
-    generateHTMLCategory(category);
-    
+const generateModal = (content, title) => {
+  const modal = document.createElement("div");
+  modal.classList.add("modal");
+
+  const span = document.createElement("span");
+  span.classList.add("modal-backdrop");
+  span.classList.add("close-modal");
+  modal.append(span);
+
+  const modalContent = document.createElement("div");
+  modalContent.classList.add("modal-content");
+  modal.append(modalContent);
+
+  const modalHeader = document.createElement("div");
+  modalHeader.classList.add("modal-header");
+  modalContent.append(modalHeader);
+
+  const modalTitle = document.createElement("h2");
+  modalTitle.classList.add("modal-title");
+  modalTitle.innerHTML = title;
+  modalHeader.append(modalTitle);
+
+  const closeModal = document.createElement("button");
+  closeModal.classList.add("close-modal");
+  closeModal.innerHTML = "&times";
+  modalHeader.append(closeModal);
+
+  const modalBody = document.createElement("div");
+  modalBody.classList.add("modal-body");
+  modalBody.innerHTML = content;
+  modalContent.append(modalBody);
+
+  const modalFooter = document.createElement("div");
+  modalFooter.classList.add("modal-footer");
+  modalContent.append(modalFooter);
+
+  const OkButton = document.createElement("button");
+  OkButton.classList.add("close-modal");
+  OkButton.innerHTML = "Close";
+  modalFooter.append(OkButton);
+
+  closeModal.addEventListener("click", (e) => {
+    modal.classList.remove("visible");
+  });
+
+  OkButton.addEventListener("click", (e) => {
+    modal.classList.remove("visible");
+  });
+
+  categories_div.append(modal);
+  modal.classList.add("visible");
+};
+
+const generateContenteModalBody = (movie) => {
+  html = `
+  <div class="content-modal-body">
+    <div class="content-modal-body-poster">
+      <img src="${movie.image_url}" /><div>`;
+  console.log(movie);
+  movie.genres.map((genre) => {
+    html += `<span class="content-modal-body-badge">${genre}</span>`;
+  });
+
+  html += `
+    </div>
+    </div>
+    <div class="content-modal-description">
+      <div class="date-and-real">
+        <div>
+          <span class="content-modal-body-badge">${movie.date_published} | </span>
+          <span><i>Realised by : ${movie.directors[0]}</i> | </span>
+          <span> ${movie.countries[0]} </span>
+          </div>
+        <span class="content-modal-body-badge big">Jury : ${movie.imdb_score}</span>
+        <span class="content-modal-body-badge big-under">User : ${movie.avg_vote}</span>
+      </div>
+      <div> 
+        <span class="content-modal-body-badge">${movie.duration} min |</span>`;
+  if (movie.worldwide_gross_income == null) {
+    html += `
+          <span> Budget information not avaible </span>
+          `;
   } else {
-    generateBanner(category);
+    html += `<span>${numberWithSpace(movie.worldwide_gross_income)} $ </span>`;
+  }
+
+  if (movie.long_description.length < 600 ) {
+    html += `</div>
+        <hr />
+          <p>${movie.long_description}</p>`; 
+  } else {
+    html += `</div>
+        <hr />
+          <p>${(movie.long_description).substring(0,600)} [...]</p>`;
+  }
+
+    html += `<div class="content-actors">
+        `;
+  compteur = 0;
+  elementNumber = 8;
+  columnNumber = Math.ceil(movie.actors.length / elementNumber);
+  for (i = 1; i <= columnNumber; i++) {
+    html += '<div class="column-actors">';
+    for (j = compteur; j < elementNumber * i; j++) {
+      if (movie.actors[j] === undefined) {
+        break;
+      }
+      html += `<li>
+              ${movie.actors[j]}
+              </li>`;
+      compteur++;
+    }
+    html += "</div>";
+  }
+
+  html += "</div></div></div>";
+
+  return html;
+};
+
+generateHTMLCategory(categories[1]).then(() => {
+  for (i = 2; i < categories.length; i++) {
+    generateHTMLCategory(categories[i]);
   }
 });
+generateBanner(categories[0]);
+
+function numberWithSpace(x) {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+}
