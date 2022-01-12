@@ -59,7 +59,6 @@ const getMovies = async (query, start, end) => {
 
 // Retrieve our extra movie informations on click
 const getMoviesInfos = async (movieID) => {
-  const extraInfos = [];
   // const urlBase = "http://localhost:8000/api/v1/titles/";
   // alert(movieID);
   const url = `http://localhost:8000/api/v1/titles/${movieID}`;
@@ -175,6 +174,7 @@ const generateBanner = async (category) => {
   bannerDescription.innerText = movie.long_description;
   banner.addEventListener("click", (e) => {
     displayMovieInformations(movie.id);
+    console.log(movie.id)
   });
 
 };

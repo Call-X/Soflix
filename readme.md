@@ -3,10 +3,10 @@
 
 
 ## Custommer asking:
-```
+
 The objectif is to develop a website which allows to watch in real time the most interessant movies for the subscribers.
 
-```
+
 ## Installation guide :
 ```
 Visit https://github.com/OpenClassrooms-Student-Center/OCMovies-API-EN-FR and follow the instructions to activate the database
