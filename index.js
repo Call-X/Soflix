@@ -162,6 +162,7 @@ const displayMovieInformations = async (id) => {
 const generateBanner = async (category) => {
   //Fetch movies
   movies = await getMovies(category.query, category.start, category.end);
+  id = movies[0].id;
   movie = await getMoviesInfos(movies[0].id);
   const banner = document.getElementById("banner");
   const bannerTitle = document.getElementById("banner__title");
@@ -173,8 +174,7 @@ const generateBanner = async (category) => {
   bannerTitle.innerText = movie.title;
   bannerDescription.innerText = movie.long_description;
   banner.addEventListener("click", (e) => {
-    displayMovieInformations(movie.id);
-    console.log(movie.id)
+    displayMovieInformations(id);
   });
 
 };
