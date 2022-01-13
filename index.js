@@ -1,7 +1,5 @@
 const API_BASE = "http://localhost:8000/api/v1";
 const categories_div = document.getElementById("categories");
-//Add Arrow from carroussel at the right place
-let nbr_of_row = 0;
 
 const categories = [
   {
@@ -43,6 +41,27 @@ const categories = [
   },
 ];
 
+const generateBanner = async (category) => {
+  //Fetch movies
+  movies = await getMovies(category.query, category.start, category.end);
+  id = movies[0].id;
+  movie = await getMoviesInfos(movies[0].id);
+  const banner = document.getElementById("banner");
+  const bannerTitle = document.getElementById("banner__title");
+  const bannerDescription = document.getElementById("banner__description");
+  banner.style.background = `url(${movie.image_url})`;
+  banner.style.backgroundRepeat = "no-repeat";
+  banner.style.backgroundSize = "contain";
+  banner.style.backgroundPosition = "center";
+  bannerTitle.innerText = movie.title;
+  bannerDescription.innerText = movie.long_description;
+  banner.addEventListener("click", (e) => {
+    displayMovieInformations(id);
+  });
+
+};
+
+
 // Retrieve our movie results
 const getMovies = async (query, start, end) => {
   let movies = [];
@@ -68,6 +87,16 @@ const getMoviesInfos = async (movieID) => {
   console.log(data);
   return data;
 };
+
+const displayMovieInformations = async (id) => {
+  movie = await getMoviesInfos(id);
+  content = generateContenteModalBody(movie);
+  generateModal(content, movie.title);
+};
+
+
+//Add Arrow from carroussel at the right place
+let nbr_of_row = 0;
 
 const generateHTMLCategory = async (category) => {
   movies = await getMovies(category.query, category.start, category.end);
@@ -153,31 +182,14 @@ const generateHTMLCategory = async (category) => {
   });
 };
 
-const displayMovieInformations = async (id) => {
-  movie = await getMoviesInfos(id);
-  content = generateContenteModalBody(movie);
-  generateModal(content, movie.title);
-};
+generateHTMLCategory(categories[1]).then(() => {
+  for (i = 2; i < categories.length; i++) {
+    generateHTMLCategory(categories[i]);
+  }
+});
+generateBanner(categories[0]);
 
-const generateBanner = async (category) => {
-  //Fetch movies
-  movies = await getMovies(category.query, category.start, category.end);
-  id = movies[0].id;
-  movie = await getMoviesInfos(movies[0].id);
-  const banner = document.getElementById("banner");
-  const bannerTitle = document.getElementById("banner__title");
-  const bannerDescription = document.getElementById("banner__description");
-  banner.style.background = `url(${movie.image_url})`;
-  banner.style.backgroundRepeat = "no-repeat";
-  banner.style.backgroundSize = "contain";
-  banner.style.backgroundPosition = "center";
-  bannerTitle.innerText = movie.title;
-  bannerDescription.innerText = movie.long_description;
-  banner.addEventListener("click", (e) => {
-    displayMovieInformations(id);
-  });
 
-};
 
 const generateModal = (content, title) => {
   const modal = document.createElement("div");
@@ -299,12 +311,7 @@ const generateContenteModalBody = (movie) => {
   return html;
 };
 
-generateHTMLCategory(categories[1]).then(() => {
-  for (i = 2; i < categories.length; i++) {
-    generateHTMLCategory(categories[i]);
-  }
-});
-generateBanner(categories[0]);
+
 
 function numberWithSpace(x) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
